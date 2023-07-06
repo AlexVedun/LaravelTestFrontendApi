@@ -67,4 +67,15 @@ class LoginController extends Controller
             'data' => [],
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Logout successful',
+            'data' => [],
+        ]);
+    }
 }
