@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\UserRepositoryInterface;
+use App\Services\ResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,14 @@ use Illuminate\Support\Facades\Hash;
 class LoginController extends Controller
 {
     private UserRepositoryInterface $userRepository;
+    private ResponseService $responseService;
 
-    public function __construct(UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        ResponseService $responseService
+    ){
         $this->userRepository = $userRepository;
+        $this->responseService = $responseService;
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -27,18 +32,18 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return response()->json([
-                'status' => 'ok',
-                'message' => 'Login successful',
-                'data' => UserResource::make(Auth::user()),
-            ]);
+            return response()->json(
+                $this->responseService->getOkResponse(
+                    'Login successful',
+                    UserResource::make(Auth::user())
+                )
+            );
         }
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'This credentials are not valid!',
-            'data' => [],
-        ], Response::HTTP_UNAUTHORIZED);
+        return response()->json(
+            $this->responseService->getErrorResponse('This credentials are not valid!'),
+            Response::HTTP_UNAUTHORIZED
+        );
     }
 
     public function register(RegisterRequest $request): JsonResponse
@@ -54,28 +59,26 @@ class LoginController extends Controller
         if ($user) {
             Auth::login($user);
 
-            return response()->json([
-                'status' => 'ok',
-                'message' => 'Registration successful',
-                'data' => UserResource::make($user),
-            ]);
+            return response()->json(
+                $this->responseService->getOkResponse(
+                    'Registration successful',
+                    UserResource::make($user)
+                )
+            );
         }
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Error when creating new user',
-            'data' => [],
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json(
+            $this->responseService->getErrorResponse('Error when creating new user'),
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
     }
 
     public function logout()
     {
         Auth::logout();
 
-        return response()->json([
-            'status' => 'ok',
-            'message' => 'Logout successful',
-            'data' => [],
-        ]);
+        return response()->json(
+            $this->responseService->getOkResponse('Logout successful')
+        );
     }
 }
