@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Interfaces\WeatherRecordRepositoryInterface;
 use App\Models\WeatherRecord;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -59,5 +61,19 @@ class WeatherRecordRepository implements WeatherRecordRepositoryInterface
         }
 
         return false;
+    }
+
+    public function getWeatherRecordsByDate(Carbon $startDate, Carbon $endDate = null): Collection
+    {
+        return WeatherRecord::where('created_at', '>=', $startDate)
+            ->when($endDate, function (Builder $query) use ($endDate) {
+                return $query->where('created_at', '<=', $endDate);
+            })
+            ->get();
+    }
+
+    public function getWeatherRecord(int $weatherRecordId): ?WeatherRecord
+    {
+        return WeatherRecord::find($weatherRecordId);
     }
 }

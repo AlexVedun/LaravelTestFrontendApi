@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Requests\WeatherRecordRequests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateWeatherRecordRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'weather_record_id' => ['required', 'int', 'exists:weather_records,id'],
+            'temp' => ['required', 'numeric'],
+            'temp_min' => ['required', 'numeric'],
+            'temp_max' => ['required', 'numeric'],
+            'feels_like' => ['required', 'numeric'],
+            'pressure' => ['required', 'numeric'],
+            'humidity' => ['required', 'numeric'],
+        ];
+    }
+}
