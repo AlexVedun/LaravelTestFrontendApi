@@ -16,6 +16,7 @@ class WeatherRecord extends Model
         'feels_like',
         'pressure',
         'humidity',
+        'user_id',
     ];
 
     // Relations
