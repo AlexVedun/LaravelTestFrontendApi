@@ -30,12 +30,14 @@ class LoginController extends Controller
         $credentials = $request->only(['email', 'password']);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
 
             return response()->json(
                 $this->responseService->getOkResponse(
                     'Login successful',
-                    UserResource::make(Auth::user())
+                    [
+                        'token' => Auth::user()->createToken('SPA')->plainTextToken,
+                        'user' => UserResource::make(Auth::user()),
+                    ]
                 )
             );
         }
@@ -62,7 +64,10 @@ class LoginController extends Controller
             return response()->json(
                 $this->responseService->getOkResponse(
                     'Registration successful',
-                    UserResource::make($user)
+                    [
+                        'token' => Auth::user()->createToken('SPA')->plainTextToken,
+                        'user' => UserResource::make($user)
+                    ]
                 )
             );
         }
@@ -75,7 +80,7 @@ class LoginController extends Controller
 
     public function logout()
     {
-        Auth::logout();
+        Auth::user()->currentAccessToken()->delete();
 
         return response()->json(
             $this->responseService->getOkResponse('Logout successful')
