@@ -1,66 +1,424 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Documentation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Registration and login
 
-## About Laravel
+### Register
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+`POST /api/register`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Headers:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+`Accept:application/json`
 
-## Learning Laravel
+Params:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* _name_ - user's name (required)
+* _email_ - user's email (required)
+* _password_ - user's password (required)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Responses:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Code 200:** registration successful
 
-## Laravel Sponsors
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "Registration successful",
+    "data": {
+        "token": "1|bOrwslB7QTGwJj10BwHpeHKRG87oD6oKx4RtisgM",
+        "user": {
+            "id": 1,
+            "name": "test user",
+            "email": "test@test.com",
+            "created_at": "2023-07-08 12:41"
+        }
+    }
+}
+```
+**Code 500:** error when creating user
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Response example:
+```json
+{
+    "status": "error",
+    "message": "Error when creating new user",
+    "data": []
+}
+```
+**Code 422:** incoming params are not valid
 
-### Premium Partners
+Response example:
+```json
+{
+    "message": "The name field is required. (and 2 more errors)",
+    "errors": {
+        "name": [
+            "The name field is required."
+        ],
+        "email": [
+            "The email field is required."
+        ],
+        "password": [
+            "The password field is required."
+        ]
+    }
+}
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Login
 
-## Contributing
+`POST /api/login`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Headers:
 
-## Code of Conduct
+`Accept:application/json`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Params:
 
-## Security Vulnerabilities
+* _email_ - user's email (required)
+* _password_ - user's password (required)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Responses:
 
-## License
+**Code 200:** login successful
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "Login successful",
+    "data": {
+        "token": "2|IncMRGQoGi8W7Ebp14JTKNBeEo9VkGJkJT70WrY8",
+        "user": {
+            "id": 1,
+            "name": "user",
+            "email": "test@test.com",
+            "created_at": "2023-07-08 15:03"
+        }
+    }
+}
+```
+**Code 401:** wrong credentials
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "This credentials are not valid!",
+    "data": []
+}
+```
+**Code 422:** incoming params are not valid
+
+Response example:
+```json
+{
+    "message": "The email field is required. (and 1 more error)",
+    "errors": {
+        "email": [
+            "The email field is required."
+        ],
+        "password": [
+            "The password field is required."
+        ]
+    }
+}
+```
+
+### Logout
+
+`POST /api/logout`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Responses:
+
+**Code 200:** logout successful
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "Logout successful",
+    "data": []
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+## Routes for weather records
+
+### Get all records
+
+`GET /api/weather-records/all`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Responses:
+
+**Code 200:** get all weather records for current user
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "",
+    "data": [
+        {
+            "id": 3,
+            "created_at": "2023-07-08 15:34:55"
+        }
+    ]
+}
+```
+
+### Get single record
+
+`GET /api/weather-records/get`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Params:
+
+* _weather_record_id_ - weather record's id (required)
+
+Responses:
+
+**Code 200:** get details for selected weather record
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "",
+    "data": {
+        "id": 3,
+        "temp": 22.2,
+        "temp_min": 16.7,
+        "temp_max": 29.2,
+        "feels_like": 22.2,
+        "pressure": 1029.63,
+        "humidity": 45.7,
+        "created_at": "2023-07-08 15:34:55"
+    }
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+**Code 403:** user not allowed to get details for selected weather record
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "The user is not allowed to make this action",
+    "data": []
+}
+```
+**Code 422:** incoming params are not valid
+
+Response example:
+```json
+{
+    "message": "The weather request id field is required.",
+    "errors": {
+        "weather_record_id": [
+            "The weather request id field is required."
+        ]
+    }
+}
+```
+
+### Update single record
+
+`POST /api/weather-records/update`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Params:
+
+* _weather_record_id_ - weather record's id (required)
+* _temp_ - temperature (required)
+* _temp_min_ - min temperature (required)
+* _temp_max_ - max temperature (required)
+* _feels_like_ - feels-like temperature (required)
+* _pressure_ - pressure (required)
+* _humidity_ - humidity (required)
+
+Responses:
+
+**Code 200:** get details for selected weather record
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "Weather record has been updated successfully",
+    "data": {
+        "id": 3,
+        "temp": 10,
+        "temp_min": 10,
+        "temp_max": 10,
+        "feels_like": 10,
+        "pressure": 10,
+        "humidity": 10,
+        "created_at": "2023-07-08 15:34:55"
+    }
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+**Code 403:** user not allowed to update selected weather record
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "The user is not allowed to make this action",
+    "data": []
+}
+```
+**Code 422:** incoming params are not valid
+
+Response example:
+```json
+{
+    "message": "The weather record id field is required. (and 6 more errors)",
+    "errors": {
+        "weather_record_id": [
+            "The weather record id field is required."
+        ],
+        "temp": [
+            "The temp field is required."
+        ],
+        "temp_min": [
+            "The temp min field is required."
+        ],
+        "temp_max": [
+            "The temp max field is required."
+        ],
+        "feels_like": [
+            "The feels like field is required."
+        ],
+        "pressure": [
+            "The pressure field is required."
+        ],
+        "humidity": [
+            "The humidity field is required."
+        ]
+    }
+}
+```
+**Code 500:** error when updating weather record
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "Cannot update weather record due to internal error",
+    "data": []
+}
+```
+
+### Delete single record
+
+`DELETE /api/weather-records/delete`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Params:
+
+* _weather_record_id_ - weather record's id (required)
+
+Responses:
+
+**Code 200:** record has been deleted successfully
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "Weather record has been deleted successfully",
+    "data": []
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+**Code 403:** user not allowed to delete selected weather record
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "The user is not allowed to make this action",
+    "data": []
+}
+```
+**Code 422:** incoming params are not valid
+
+Response example:
+```json
+{
+    "message": "The weather record id field is required.",
+    "errors": {
+        "weather_record_id": [
+            "The weather record id field is required."
+        ]
+    }
+}
+```
+**Code 500:** error when deleting weather record
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "Cannot delete weather record due to internal error",
+    "data": []
+}
+```
