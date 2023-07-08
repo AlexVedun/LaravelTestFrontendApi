@@ -20,7 +20,7 @@ class WeatherRecordRepository implements WeatherRecordRepositoryInterface
 
     public function getWeatherRecordsByUserId(int $userId): Collection
     {
-        $cacheKey = "weather-records-all-${$userId}";
+        $cacheKey = "weather-records-all-${userId}";
 
         return Cache::tags(['weather-records-all'])->rememberForever($cacheKey, function() use ($userId) {
             return WeatherRecord::whereUserId($userId)->get();
@@ -85,7 +85,7 @@ class WeatherRecordRepository implements WeatherRecordRepositoryInterface
 
     public function getWeatherRecord(int $weatherRecordId): ?WeatherRecord
     {
-        $cacheKey = "weather-record-${$weatherRecordId}";
+        $cacheKey = "weather-record-${weatherRecordId}";
 
         return Cache::tags('weather-record')->rememberForever($cacheKey, function() use ($weatherRecordId) {
             return WeatherRecord::find($weatherRecordId);
