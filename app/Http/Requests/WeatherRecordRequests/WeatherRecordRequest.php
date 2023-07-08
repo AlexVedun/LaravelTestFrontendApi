@@ -22,7 +22,7 @@ class WeatherRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'weather_request_id' => ['required', 'int', 'exists:weather_records,id'],
+            'weather_record_id' => ['required', 'int', 'exists:weather_records,id'],
         ];
     }
 }

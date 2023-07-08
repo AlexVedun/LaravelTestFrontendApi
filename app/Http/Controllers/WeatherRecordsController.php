@@ -59,7 +59,7 @@ class WeatherRecordsController extends Controller
     public function get(WeatherRecordRequest $request): JsonResponse
     {
         $user = Auth::user();
-        $weatherRecordId = $request->get('weather_request_id');
+        $weatherRecordId = $request->get('weather_record_id');
 
         $weatherRecord = $this->weatherRecordRepository->getWeatherRecord($weatherRecordId);
 
@@ -119,7 +119,7 @@ class WeatherRecordsController extends Controller
     public function delete(WeatherRecordRequest $request): JsonResponse
     {
         $user = Auth::user();
-        $weatherRecordId = $request->get('weather_request_id');
+        $weatherRecordId = $request->get('weather_record_id');
         $weatherRecord = $this->weatherRecordRepository->getWeatherRecord($weatherRecordId);
 
         if ($user->cannot('delete', $weatherRecord)) {
