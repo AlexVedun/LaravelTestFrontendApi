@@ -20,6 +20,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
+            $table->boolean('is_admin')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

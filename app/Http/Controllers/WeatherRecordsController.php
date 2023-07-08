@@ -58,9 +58,17 @@ class WeatherRecordsController extends Controller
 
     public function get(WeatherRecordRequest $request): JsonResponse
     {
+        $user = Auth::user();
         $weatherRecordId = $request->get('weather_request_id');
 
         $weatherRecord = $this->weatherRecordRepository->getWeatherRecord($weatherRecordId);
+
+        if ($user->cannot('view', $weatherRecord)) {
+            return response()->json(
+                $this->responseService->getErrorResponse('The user is not allowed to make this action'),
+                Response::HTTP_FORBIDDEN
+            );
+        }
 
         return response()->json(
             $this->responseService->getOkResponse(
@@ -72,7 +80,9 @@ class WeatherRecordsController extends Controller
 
     public function update(UpdateWeatherRecordRequest $request): JsonResponse
     {
+        $user = Auth::user();
         $weatherRecordId = $request->get('weather_record_id');
+        $weatherRecord = $this->weatherRecordRepository->getWeatherRecord($weatherRecordId);
         $weatherRecordData = $request->only([
             'temp',
             'feels_like',
@@ -81,6 +91,13 @@ class WeatherRecordsController extends Controller
             'temp_max',
             'temp_min',
         ]);
+
+        if ($user->cannot('update', $weatherRecord)) {
+            return response()->json(
+                $this->responseService->getErrorResponse('The user is not allowed to make this action'),
+                Response::HTTP_FORBIDDEN
+            );
+        }
 
         $weatherRecord = $this->weatherRecordRepository->updateWeatherRecord($weatherRecordId, $weatherRecordData);
 
@@ -101,7 +118,16 @@ class WeatherRecordsController extends Controller
 
     public function delete(WeatherRecordRequest $request): JsonResponse
     {
+        $user = Auth::user();
         $weatherRecordId = $request->get('weather_request_id');
+        $weatherRecord = $this->weatherRecordRepository->getWeatherRecord($weatherRecordId);
+
+        if ($user->cannot('delete', $weatherRecord)) {
+            return response()->json(
+                $this->responseService->getErrorResponse('The user is not allowed to make this action'),
+                Response::HTTP_FORBIDDEN
+            );
+        }
 
         if ($this->weatherRecordRepository->deleteWeatherRecord($weatherRecordId)) {
             return response()->json(
