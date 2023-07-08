@@ -26,12 +26,14 @@ Response example:
     "status": "ok",
     "message": "Registration successful",
     "data": {
-        "token": "1|bOrwslB7QTGwJj10BwHpeHKRG87oD6oKx4RtisgM",
+        "token": "2|zzuHZEO0FNyzMX9Z6FfVGldpr8ZxPl8lFRNy22CU",
         "user": {
-            "id": 1,
-            "name": "test user",
+            "id": 6,
+            "name": "user",
             "email": "test@test.com",
-            "created_at": "2023-07-08 12:41"
+            "latitude": null,
+            "longitude": null,
+            "created_at": "2023-07-08 19:40"
         }
     }
 }
@@ -89,12 +91,14 @@ Response example:
     "status": "ok",
     "message": "Login successful",
     "data": {
-        "token": "2|IncMRGQoGi8W7Ebp14JTKNBeEo9VkGJkJT70WrY8",
+        "token": "1|ZCqPKG06sKnM4yjKPQ974phwRsBBNBgFdpMWQu02",
         "user": {
-            "id": 1,
-            "name": "user",
-            "email": "test@test.com",
-            "created_at": "2023-07-08 15:03"
+            "id": 3,
+            "name": "Glennie Friesen",
+            "email": "lbraun@example.org",
+            "latitude": "81.319286",
+            "longitude": "61.941144",
+            "created_at": "2023-07-08 19:19"
         }
     }
 }
@@ -276,7 +280,7 @@ Params:
 
 Responses:
 
-**Code 200:** get details for selected weather record
+**Code 200:** weather record has been successfully updated
 
 Response example:
 ```json
@@ -419,6 +423,154 @@ Response example:
 {
     "status": "error",
     "message": "Cannot delete weather record due to internal error",
+    "data": []
+}
+```
+
+## Routes for manipulating user profile
+
+### Get user profile data
+
+`GET /api/user/get`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Responses:
+
+**Code 200:** get profile data for current user
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "",
+    "data": {
+        "id": 3,
+        "name": "Glennie Friesen",
+        "email": "lbraun@example.org",
+        "latitude": "81.319286",
+        "longitude": "61.941144",
+        "created_at": "2023-07-08 19:19"
+    }
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+### Update user profile
+
+`POST /api/user/update`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Params:
+
+* _name_ - user's name (required)
+* _latitude_ - latitude
+* _longitude_ - longitude
+
+Responses:
+
+**Code 200:** user profile has been updated successfully
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "User profile successfully updated",
+    "data": {
+        "id": 3,
+        "name": "new user",
+        "email": "lbraun@example.org",
+        "latitude": "0",
+        "longitude": "0",
+        "created_at": "2023-07-08 19:19"
+    }
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+**Code 422:** incoming params are not valid
+
+Response example:
+```json
+{
+    "message": "The name field is required.",
+    "errors": {
+        "name": [
+            "The name field is required."
+        ]
+    }
+}
+```
+**Code 500:** error when updating user profile
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "Cannot update user profile due to internal error",
+    "data": []
+}
+```
+
+### Delete user profile
+
+`DELETE /api/user/delete`
+
+Headers:
+
+`Accept:application/json`
+
+`Authorization: Bearer {{token}}`
+
+Responses:
+
+**Code 200:** user profile has been deleted successfully
+
+Response example:
+```json
+{
+    "status": "ok",
+    "message": "User has been deleted successfully",
+    "data": []
+}
+```
+**Code 401:** when token is absent, wrong, or is already rejected
+
+Response example:
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+**Code 500:** error when deleting user profile
+
+Response example:
+```json
+{
+    "status": "error",
+    "message": "Cannot delete user due to internal error!",
     "data": []
 }
 ```

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeatherRecordsController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,5 +27,11 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('update', [WeatherRecordsController::class, 'update']);
         Route::delete('delete', [WeatherRecordsController::class, 'delete']);
         Route::get('get-by-date', [WeatherRecordsController::class, 'getAllByDate']);
+    });
+
+    Route::group(['prefix' => 'user'], function() {
+        Route::get('get', [UserController::class, 'get']);
+        Route::post('update', [UserController::class, 'update']);
+        Route::delete('delete', [UserController::class, 'delete']);
     });
 });
