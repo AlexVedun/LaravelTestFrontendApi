@@ -7,6 +7,7 @@ use App\Models\WeatherRecord;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class WeatherRecordRepository implements WeatherRecordRepositoryInterface
@@ -19,7 +20,11 @@ class WeatherRecordRepository implements WeatherRecordRepositoryInterface
 
     public function getWeatherRecordsByUserId(int $userId): Collection
     {
-        return WeatherRecord::whereUserId($userId)->get();
+        $cacheKey = "weather-records-all-${$userId}";
+
+        return Cache::tags(['weather-records-all'])->rememberForever($cacheKey, function() use ($userId) {
+            return WeatherRecord::whereUserId($userId)->get();
+        });
     }
 
     public function createWeatherRecord(array $weatherData): ?WeatherRecord
@@ -63,17 +68,27 @@ class WeatherRecordRepository implements WeatherRecordRepositoryInterface
         return false;
     }
 
-    public function getWeatherRecordsByDate(Carbon $startDate, Carbon $endDate = null): Collection
+    public function getWeatherRecordsByDate(int $userId, Carbon $startDate, Carbon $endDate = null): Collection
     {
-        return WeatherRecord::where('created_at', '>=', $startDate)
-            ->when($endDate, function (Builder $query) use ($endDate) {
-                return $query->where('created_at', '<=', $endDate);
-            })
-            ->get();
+        $paramsHash = md5(serialize([$userId, $startDate, $endDate]));
+        $cacheKey = "weather-records-by-date-${paramsHash}";
+
+        return Cache::tags(['weather-records-by-date'])->rememberForever($cacheKey, function () use ($startDate, $endDate, $userId) {
+            return WeatherRecord::whereUserId($userId)
+                ->where('created_at', '>=', $startDate)
+                ->when($endDate, function (Builder $query) use ($endDate) {
+                    return $query->where('created_at', '<=', $endDate);
+                })
+                ->get();
+        });
     }
 
     public function getWeatherRecord(int $weatherRecordId): ?WeatherRecord
     {
-        return WeatherRecord::find($weatherRecordId);
+        $cacheKey = "weather-record-${$weatherRecordId}";
+
+        return Cache::tags('weather-record')->rememberForever($cacheKey, function() use ($weatherRecordId) {
+            return WeatherRecord::find($weatherRecordId);
+        });
     }
 }

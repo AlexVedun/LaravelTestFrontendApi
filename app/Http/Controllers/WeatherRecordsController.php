@@ -42,10 +42,11 @@ class WeatherRecordsController extends Controller
 
     public function getAllByDate(WeatherRecordsByDateRequest $request): JsonResponse
     {
+        $user = Auth::user();
         $beginDate = Carbon::parse($request->get('begin_date'));
         $endDate = $request->has('end_date') ? Carbon::parse($request->get('end_date')) : null;
 
-        $weatherRecords = $this->weatherRecordRepository->getWeatherRecordsByDate($beginDate, $endDate);
+        $weatherRecords = $this->weatherRecordRepository->getWeatherRecordsByDate($user->id, $beginDate, $endDate);
 
         return response()->json(
             $this->responseService->getOkResponse(
